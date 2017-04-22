@@ -1,4 +1,5 @@
-﻿#include <vector>
+﻿#include <iostream>
+#include <vector>
 #include "MyCurl.h"
 
 namespace MyCurl {
@@ -57,19 +58,20 @@ std::string redirectedUrl(std::string url) {
 	// Perform the request, curl_res will get the return code
 	curl_res = curl_easy_perform(curl);
 
-	// Check for errors (add #include <iostream>)
-	/*if (curl_res != CURLE_OK)
+	// Check for errors
+	if (curl_res != CURLE_OK)
 		std::cout << "curl_easy_perform() failed: " << curl_easy_strerror(curl_res) << std::endl;
 	else {
 		curl_res = curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &redirect);
-
-		if ((curl_res == CURLE_OK) && redirect)
+		if ((curl_res == CURLE_OK) && redirect) {
 			std::cout << "CURLINFO_EFFECTIVE_URL: " << redirect << std::endl;
-	} */
+			return redirect;
+		}
+	}
 
 	curl_easy_cleanup(curl);
 	curl_global_cleanup();
-	return redirect;
+	return "";
 }
 
 } // namspace MyCurl
