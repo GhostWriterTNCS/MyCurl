@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <string>
 #include <vector>
 #include "MyCurl.h"
 
@@ -6,13 +7,14 @@ namespace MyCurl {
 
 size_t writeCallback(char* buf, size_t size, size_t nmemb, void* html) {
 	for (int c = 0; c < size * nmemb; c++) {
-		((std::string*)html)->push_back(buf[c]);
+		((std::wstring*)html)->push_back(buf[c]);
 	}
 	return size * nmemb; // tell curl how many bytes we handled
 }
 std::string urlToString(std::string url) {
-	std::string html = "";
+	std::wstring html; // wstring can work with UTF8 encoding
 	CURL* curl;
+
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl = curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -25,7 +27,9 @@ std::string urlToString(std::string url) {
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 	curl_global_cleanup();
-	return html;
+
+	std::string result(html.begin(), html.end());
+	return result;
 }
 
 std::string decodeHtml(std::string html) {
