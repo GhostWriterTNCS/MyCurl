@@ -6,6 +6,8 @@
 namespace MyCurl {
 
 std::string urlToString(std::string url);
+bool urlToFile(std::string url, std::string filename);
+
 std::string decodeHtml(std::string html);
 std::string redirectedUrl(std::string url);
 

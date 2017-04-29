@@ -1,13 +1,14 @@
 ﻿#include <iostream>
 #include <string>
 #include <vector>
+#include <stdio.h>
 #include "MyCurl.h"
 
 namespace MyCurl {
 
-size_t writeCallback(char* buf, size_t size, size_t nmemb, void* html) {
+size_t writeString(char* buf, size_t size, size_t nmemb, std::wstring* html) {
 	for (int c = 0; c < size * nmemb; c++) {
-		((std::wstring*)html)->push_back(buf[c]);
+		html->push_back(buf[c]);
 	}
 	return size * nmemb; // tell curl how many bytes we handled
 }
@@ -20,16 +21,44 @@ std::string urlToString(std::string url) {
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 20L);
+
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeCallback);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeString);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &html);
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); // tell curl to output its progress
+
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 	curl_global_cleanup();
 
-	std::string result(html.begin(), html.end());
-	return result;
+	return std::string(html.begin(), html.end());
+}
+
+size_t writeFile(void* ptr, size_t size, size_t nmemb, FILE* stream) {
+	size_t written = fwrite(ptr, size, nmemb, stream);
+	return written; // tell curl how many bytes we handled
+}
+bool urlToFile(std::string url, std::string filename) {
+	CURL* curl;
+	FILE* file;
+	if (fopen_s(&file, filename.c_str(), "wb") == 0) {
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl = curl_easy_init();
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 20L);
+
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeFile);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); // tell curl to output its progress
+
+		curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+		fclose(file);
+		return true;
+	}
+	return false;
 }
 
 std::string decodeHtml(std::string html) {
