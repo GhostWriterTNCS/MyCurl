@@ -1,6 +1,6 @@
 # [MyCurl](https://github.com/GhostWriterTNCS/MyCurl)
 
-A small collection of functions used in my projects working with [cURL](https://curl.haxx.se/).
+A small collection of functions used in my projects working with [curl](https://curl.haxx.se/).
 
 In order to use this functions, remember to include the static library **libcurl_a.lib** and to add the compile command **-DCURL_STATICLIB**.
 

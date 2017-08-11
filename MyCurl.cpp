@@ -6,6 +6,9 @@
 
 namespace MyCurl {
 
+/**
+	Convert html content to string.
+*/
 size_t writeString(char* buf, size_t size, size_t nmemb, std::wstring* html) {
 	for (int c = 0; c < size * nmemb; c++) {
 		html->push_back(buf[c]);
@@ -34,6 +37,9 @@ std::string urlToString(std::string url) {
 	return std::string(html.begin(), html.end());
 }
 
+/**
+	Convert html content to file.
+*/
 size_t writeFile(void* ptr, size_t size, size_t nmemb, FILE* stream) {
 	size_t written = fwrite(ptr, size, nmemb, stream);
 	return written; // tell curl how many bytes we handled
@@ -62,13 +68,17 @@ bool urlToFile(std::string url, std::string filename) {
 }
 
 std::string decodeHtml(std::string html) {
+	// TODO: add missing codes.
 	std::vector<std::vector<std::string>> encodings = {
 		{"&lsquo;", "‘"}, {"&rsquo;", "’"}, {"&ldquo;", "“"}, {"&rdquo;", "”"}, {"&amp;", "&"},
 		{"&#33;", "!"},   {"&#033;", "!"},  {"&#38;", "&"},   {"&#038;", "&"},  {"&#39;", "'"},
 		{"&#039;", "'"},  {"&#333;", "ō"},  {"&#8730;", "√"}, {"â€“", "–"},		{"âˆš", "√"}};
 
 	for (int i = 0; i < encodings.size(); i++) {
-		html = html.replace(html.find(encodings[i][0]), encodings[i][0].length(), encodings[i][1]);
+		if (html.find(encodings[i][0]) != std::string::npos) {
+			html =
+				html.replace(html.find(encodings[i][0]), encodings[i][0].length(), encodings[i][1]);
+		}
 	}
 	return html;
 }
