@@ -24,6 +24,8 @@ std::string urlToString(std::string url) {
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 20L);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT,
+					 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0");
 
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeString);
@@ -53,6 +55,9 @@ bool urlToFile(std::string url, std::string filename) {
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, 20L);
+		curl_easy_setopt(
+			curl, CURLOPT_USERAGENT,
+			"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0");
 
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeFile);
@@ -93,6 +98,8 @@ std::string redirectedUrl(std::string url) {
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 20L);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT,
+					 "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0");
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_NOBODY, 1);
 
