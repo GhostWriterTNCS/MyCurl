@@ -11,13 +11,13 @@ namespace MyCurl {
 /**
 	Parse the html by url and return the content as string.
 */
-std::string urlToString(std::string url);
+std::string urlToString(std::string url, bool verbose = false);
 
 /**
 	Parse the html by url and create a file from the page content.
 	Returns true if success, otherwise false.
 */
-bool urlToFile(std::string url, std::string filename);
+bool urlToFile(std::string url, std::string filename, bool verbose = false);
 
 /**
 	Find and replace html codes in string.

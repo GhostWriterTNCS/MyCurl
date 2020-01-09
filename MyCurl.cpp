@@ -15,7 +15,7 @@ size_t writeString(char* buf, size_t size, size_t nmemb, std::wstring* html) {
 	}
 	return size * nmemb; // tell curl how many bytes we handled
 }
-std::string urlToString(std::string url) {
+std::string urlToString(std::string url, bool verbose) {
 	std::wstring html; // wstring can work with UTF8 encoding
 	CURL* curl;
 
@@ -30,7 +30,8 @@ std::string urlToString(std::string url) {
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeString);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &html);
-	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); // tell curl to output its progress
+	if (verbose)
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); // tell curl to output its progress
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
@@ -46,7 +47,7 @@ size_t writeFile(void* ptr, size_t size, size_t nmemb, FILE* stream) {
 	size_t written = fwrite(ptr, size, nmemb, stream);
 	return written; // tell curl how many bytes we handled
 }
-bool urlToFile(std::string url, std::string filename) {
+bool urlToFile(std::string url, std::string filename, bool verbose) {
 	CURL* curl;
 	FILE* file;
 	if (fopen_s(&file, filename.c_str(), "wb") == 0) {
@@ -62,7 +63,8 @@ bool urlToFile(std::string url, std::string filename) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeFile);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); // tell curl to output its progress
+		if (verbose)
+			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); // tell curl to output its progress
 
 		curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
@@ -76,8 +78,8 @@ std::string decodeHtml(std::string html) {
 	// TODO: add missing codes.
 	std::vector<std::vector<std::string>> encodings = {
 		{"&lsquo;", "‘"}, {"&rsquo;", "’"}, {"&ldquo;", "“"}, {"&rdquo;", "”"}, {"&amp;", "&"},
-		{"&#33;", "!"},   {"&#033;", "!"},  {"&#38;", "&"},   {"&#038;", "&"},  {"&#39;", "'"},
-		{"&#039;", "'"},  {"&#333;", "ō"},  {"&#8730;", "√"}, {"â€“", "–"},		{"âˆš", "√"}};
+		{"&#33;", "!"},	  {"&#033;", "!"},	{"&#38;", "&"},	  {"&#038;", "&"},	{"&#39;", "'"},
+		{"&#039;", "'"},  {"&#333;", "ō"},	{"&#8730;", "√"}, {"â€“", "–"},		{"âˆš", "√"}};
 
 	for (int i = 0; i < encodings.size(); i++) {
 		if (html.find(encodings[i][0]) != std::string::npos) {
